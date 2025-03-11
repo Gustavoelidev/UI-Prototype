@@ -1,0 +1,29 @@
+{
+  "name": "ui-prototype",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gustavoelidev/UI-Prototype.git"
+  },
+  "scripts": {
+  "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gustavoelidev/UI-Prototype/issues"
+  },
+  "homepage": "https://github.com/Gustavoelidev/UI-Prototype#readme",
+  "description": "",
+  "dependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.13.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
