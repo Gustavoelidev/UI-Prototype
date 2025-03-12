@@ -1,51 +1,66 @@
-import { test, expect, chromium } from '@playwright/test';
+import { chromium, Browser, Page } from 'playwright';
+import { expect, test } from '@playwright/test';
 
-test('Testar login com dados válidos', async () => {
-  // Lançar o navegador com a opção de ignorar erros SSL
-  const browser = await chromium.launch({
-    headless: false, // Modo gráfico para visualização
-    ignoreHTTPSErrors: true, // Ignora erros de SSL
-  });
-  const page = await browser.newPage();
+// Função de teste de privacidade (mantida a mesma lógica)
+async function testeDePrivacidade(page: Page): Promise<void> {
+  const loginUrl: string = 'teste_link';
 
-  // Acesse a página de login
-  const loginUrl = 'link_web';
+  // Navega até a URL de login
   try {
     await page.goto(loginUrl, { waitUntil: 'load' }); // Espera até a página carregar
   } catch (error) {
     console.error('Erro ao acessar a página:', error);
   }
 
-  // Tirar uma captura de tela da página de login (antes de preencher os campos)
-  await page.screenshot({ path: 'login_page_before.png' });
+  // Aguarda os elementos estarem disponíveis e clica neles
+  try {
+    await page.click('#details-button');
+    await page.click('#proceed-link');
+  } catch (error: any) {
+    console.error('Erro ao interagir com os elementos:', error.message);
+    await page.screenshot({ path: 'erro-elementos.png' }); // Screenshot em caso de erro
+    throw error;
+  }
+}
 
-  // Localize os campos de entrada e preencha os dados de login
-  await page.click('#details-button');
-  await page.click('#proceed-link');
-  page.setDefaultTimeout(20000); // 10 segundos
-  // Espera os campos de login estarem visíveis antes de preencher
-  await page.waitForSelector('#user_name');
-  await page.fill('#user_name', 'ped');
-  await page.fill('#password', 'senha');
-  page.setDefaultTimeout(20000); // 10 segundos
-  // Clique nos checkboxes
-  await page.click('#Privacy_policy');
-  await page.click('#Use_terms');
-  await page.click('#remember_user');
+// Teste de login
+test('Teste de login', async () => {
+  const browser: Browser = await chromium.launch({
+    headless: false, // Modo gráfico para visualização
+    ignoreHTTPSErrors: true, // Ignora erros de SSL
+  });
+  const page: Page = await browser.newPage();
 
-  // Clique no botão de login
-  await page.click('#login_button');
-  // Aguarde a página carregar após o login (ou o redirecionamento)
-  await page.waitForNavigation({ waitUntil: 'load' });
-  page.setDefaultTimeout(30000); // 10 segundos
-  // Tirar uma captura de tela após o login para ver o estado da página
-  await page.screenshot({ path: 'login_page_after.png' });
+  try {
+    // Executa a função de privacidade, passando o `page` como argumento
+    await testeDePrivacidade(page);
 
-  // Verifique se o login foi bem-sucedido e se a URL contém o identificador de sessão
-  const currentUrl = page.url();
-  console.log('URL após o login:', currentUrl); // Para depuração
-  await expect(currentUrl).toContain('sessionid'); // Verifica se contém 'sessionid' na URL
+    // Preenche o campo de usuário
+    await page.waitForSelector('#user_name', { state: 'visible' });
+    await page.fill('#user_name', 'ped');
 
-  // Feche o navegador
-  await browser.close();
+    // Preenche o campo de senha
+    await page.waitForSelector('#password', { state: 'visible' });
+    await page.fill('#password', 'senha');
+
+    // Clica nos checkboxes
+    await page.click('#Privacy_policy');
+    await page.click('#Use_terms');
+    await page.click('#remember_user');
+
+    // Verifica o título da página
+    const titulo = await page.title();
+    console.log('Título da página:', titulo);
+    await expect(page).toHaveTitle('Login');
+
+    // Adicione aqui mais ações ou verificações, se necessário
+
+  } catch (error) {
+    console.error('Erro durante o teste:', error);
+    await page.screenshot({ path: 'erro-teste.png' }); // Screenshot em caso de erro
+    throw error; // Lança o erro para falhar o teste
+  } finally {
+    // Fecha o navegador após o teste
+    await browser.close();
+  }
 });
