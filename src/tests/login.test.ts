@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 // Função de teste de privacidade (mantida a mesma lógica)
 async function privacyScreen(page: Page): Promise<void> {
-  const loginUrl: string = 'link-para-teste';
+  const loginUrl: string = '';
 
   // Navega até a URL de login
   try {
@@ -47,6 +47,7 @@ test.afterAll(async () => {
 
 // Teste de login
 test('Login Test', async () => {
+  test.setTimeout(60000);
   try {
     // Executa a função de privacidade, passando o page como argumento
     await privacyScreen(page);
@@ -57,12 +58,13 @@ test('Login Test', async () => {
 
     // Preenche o campo de senha
     await page.waitForSelector('#password', { state: 'visible' });
-    await page.fill('#password', 'Admin@12');
+    await page.fill('#password', 'testesenha');
 
     // Clica nos checkboxes
     await page.click('#Privacy_policy');
     await page.click('#Use_terms');
     await page.click('#remember_user');
+    await page.click('#login_button');
 
     // Verifica o título da página
     const titulo = await page.title();
@@ -84,24 +86,63 @@ test('Login Test', async () => {
     await page.screenshot({ path: 'interface_Logout.png' });
     await page.getByRole('heading', { name: 'Confirm' }).click();
     await page.locator('#frame_msg_confirm button').click();
+    await page.getByRole('link', { name: 'View Details', exact: true }).click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetails.png' });
+    await page.locator('[id="\\32 12"] a').click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetails_2.png' });
+    await page.waitForTimeout(2000);
+    await page.locator('#back_to_index').getByRole('link').click();
+    await page.getByRole('link', { name: 'VIew Details', exact: true }).click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetails2.png' });
+    await page.getByRole('link', { name: 'Advanced search' }).click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetail_Advanced_search.png' });
+    await page.getByRole('link', { name: 'Advanced search' }).click();
+    await page.waitForTimeout(2000);
+    await page.locator('.slick-header-column').first().click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetail_topicos.png' });
+    await page.locator('.slick-header-column').first().click();
+    await page.getByRole('link', { name: 'Refresh' }).click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetail_refresh.png' });
+    await page.getByRole('link', { name: 'Online Help' }).click();
+    await page.waitForTimeout(2000);
+    await page.screenshot({ path: 'interface_Save_ViewDetail_OnlineHelp.png' });
+    await page.locator('#edit_div').getByRole('link').click();
+    await page.getByText('Statistics').click();
+    await page.waitForTimeout(4000);
+    await page.screenshot({ path: 'interface_Save_ViewDetail_Statistics.png' });
+    await page.getByRole('link', { name: 'Close' }).click();
+    await page.locator('#back_to_pre').click();
     await page.getByRole('link', { name: 'Dashboard' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Dashboard.png' });
     await page.getByRole('link', { name: 'Device' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Device.png' });
     await page.getByRole('link', { name: 'Network' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Network.png' });
+    await page.waitForTimeout(2000);
     await page.getByRole('link', { name: 'Resources' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Resources.png' });
     await page.getByRole('link', { name: 'QoS' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_QoS.png' });
     await page.getByRole('link', { name: 'Security' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Security.png' });
     await page.getByRole('link', { name: 'PoE' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_PoE.png' });
     await page.getByRole('link', { name: 'Log' }).click();
+    await page.waitForTimeout(2000);
     await page.screenshot({ path: 'interface_Log.png' });
-
-
   } catch (error) {
     console.error('Erro durante o teste:', error);
     await page.screenshot({ path: 'erro-teste.png' }); // Screenshot em caso de erro
