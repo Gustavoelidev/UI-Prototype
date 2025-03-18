@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Gustavoelidev/UI-Prototype#readme",
   "description": "",
   "dependencies": {
-    "@playwright/test": "^1.51.0",
+    "@playwright/test": "^1.51.1",
     "@types/node": "^22.13.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
