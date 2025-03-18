@@ -7,28 +7,58 @@ export class LoginPage {
     this.page = page;
   }
 
-  // Navega até a URL de login
-  async navigateToLogin(url: string): Promise<void> {
-    try {
-      await this.page.goto(url, { waitUntil: 'load' });
-    } catch (error) {
-      console.error('Erro ao acessar a página:', error);
-      throw error;
-    }
-  }
 
   // Lida com a tela de privacidade
   async handlePrivacyScreen(): Promise<void> {
+    const loginUrl: string = 'link-dut'; // Link do DUT
+  
+    // Navega até a URL de login
+    try {
+      await this.page.goto(loginUrl, { waitUntil: 'load' }); // Espera até a página carregar
+    } catch (error) {
+      console.error('Erro ao acessar a página:', error);
+    }
+  
+    // Aguarda os elementos estarem disponíveis e clica neles
     try {
       await this.page.click('#details-button');
       await this.page.click('#proceed-link');
     } catch (error: any) {
       console.error('Erro ao interagir com os elementos:', error.message);
-      await this.page.screenshot({ path: 'screenshots/erro-elementos.png' });
+      await this.page.screenshot({ path: 'erro-elementos.png' }); // Screenshot em caso de erro
       throw error;
     }
   }
 
+  // Verifica o título da página
+  async verifyPageTitle(expectedTitle: string): Promise<void> {
+      const titulo = await this.page.title();
+      console.log('Título da página:', titulo);
+      await expect(this.page).toHaveTitle(expectedTitle);
+  }
+
+  async testlogin(): Promise<void> {
+      // Clica nas checkboxes
+      await this.page.waitForSelector('#Privacy_policy', { state: 'visible' });
+      await this.page.click('#Privacy_policy');
+    
+      await this.page.waitForSelector('#Use_terms', { state: 'visible' });
+      await this.page.click('#Use_terms');
+    
+      // Clica no botão de login sem preencher o campo de usuário
+      await this.page.click('#login_button');
+    
+      // Aguarda a mensagem de erro estar visível
+      await this.page.waitForSelector('.alert.alert-error .msg', { state: 'visible' });
+      
+      // Verifica a mensagem de erro
+      const errorMessage = await this.page.textContent('.alert.alert-error .msg');
+      expect(errorMessage).toBe('UserName cannot empty');
+
+      await this.page.locator('#Privacy_policy').click();
+      await this.page.locator('#Use_terms').click();
+
+  }
   // Preenche o campo de usuário
   async fillUsername(username: string): Promise<void> {
     await this.page.waitForSelector('#user_name', { state: 'visible' });
@@ -71,11 +101,11 @@ export class LoginPage {
   }
 
   // Verifica o título da página
-  async verifyPageTitle(expectedTitle: string): Promise<void> {
+  async verifyPageTitleInterface(expectedTitle: string): Promise<void> {
     const titulo = await this.page.title();
     console.log('Título da página:', titulo);
     await expect(this.page).toHaveTitle(expectedTitle);
-  }
+}
 
   // Aguarda o elemento "System Logs" estar visível e tira um screenshot
   async verifySystemLogs(): Promise<void> {

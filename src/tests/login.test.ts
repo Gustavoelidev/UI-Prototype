@@ -11,7 +11,6 @@ test.beforeAll(async () => {
   // Inicia o navegador antes de todos os testes
   browser = await chromium.launch({
     headless: false, // Modo gráfico para visualização
-    ignoreHTTPSErrors: true, // Ignora erros de SSL
     channel: 'msedge',
   });
   page = await browser.newPage();
@@ -30,24 +29,23 @@ test.afterAll(async () => {
 test('Login Test', async () => {
   test.setTimeout(120000);
   try {
-    // Navega até a URL de login e lida com a tela de privacidade
-    await loginPage.navigateToLogin('link');
     await loginPage.handlePrivacyScreen();
     await page.screenshot({ path: 'screenshots/Login.png' });
 
+    // Verifica o título da página
+    await loginPage.verifyPageTitle('Login');
+    // Tenta logar sem os campos de usuario e senha
+    await loginPage.testlogin();
+    await page.screenshot({ path: 'screenshots/Login_Error.png' });
     // Preenche os campos de usuário e senha
     await loginPage.fillUsername('ped');
     await loginPage.fillPassword('Admin@1234');
-
     // Verifica e clica nos checkboxes
     await loginPage.handleCheckboxes();
-
     // Clica no botão de login
     await loginPage.clickLoginButton();
-
-    // Verifica o título da página
-    await loginPage.verifyPageTitle('Login');
-
+    // Verifica o título da página apos o login
+    await loginPage.verifyPageTitleInterface('INTELBRAS SC 3170-24G-4X|Dashboard');
     // Verifica o elemento "System Logs" e tira screenshots
     await loginPage.verifySystemLogs();
 
